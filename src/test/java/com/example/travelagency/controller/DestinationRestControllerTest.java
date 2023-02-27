@@ -6,50 +6,39 @@ import com.example.travelagency.exception.DestinationNotFoundException;
 import com.example.travelagency.model.Destination;
 import com.example.travelagency.service.DestinationService;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.mock.web.MockHttpServletResponse;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.RequestBuilder;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.web.util.UriComponents;
-import org.springframework.web.util.UriComponentsBuilder;
 
-import java.net.URI;
 import java.util.List;
-import java.util.Objects;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doThrow;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 
-@ExtendWith(MockitoExtension.class)
+
+@SpringBootTest
+@AutoConfigureMockMvc
+@WithMockUser
 public class DestinationRestControllerTest {
-    @Mock
+    @MockBean
     private DestinationService destinationService;
 
-    @InjectMocks
-    private DestinationRestController destinationRestController;
-
+    @Autowired
     private MockMvc mockMvc;
 
     ObjectMapper objectMapper = new ObjectMapper();
-
-    @BeforeEach
-    public void setup() {
-        mockMvc = MockMvcBuilders.standaloneSetup(destinationRestController)
-                .build();
-    }
-
 
     @Test
     public void shouldReturnDestinationDtoWhenValidIdExists() throws Exception {
@@ -141,13 +130,13 @@ public class DestinationRestControllerTest {
         //given
         Long id = 1L;
         Destination destination = new Destination(id, "Paris");
-        DestinationDto destinationDto = new DestinationDto(id, "Paris");
+        DestinationDto destinationDto = new DestinationDto(id, "London");
 
         RequestBuilder requestBuilder = post("/destinations/add/")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(destinationDto));
 
-        given(destinationService.addDestination(destination)).willReturn(destination);
+        given(destinationService.addDestination(any(Destination.class))).willReturn(destination);
 
         //when
         MockHttpServletResponse response = mockMvc.perform(requestBuilder).andReturn().getResponse();
@@ -160,7 +149,7 @@ public class DestinationRestControllerTest {
     public void shouldReturnNoContentStatusWhenDeletedProperly() throws Exception {
         //given
         Long id = 1L;
-        RequestBuilder requestBuilder = get("/destinations/delete/" + id);
+        RequestBuilder requestBuilder = delete("/destinations/delete/" + id);
 
         doNothing().when(destinationService).deleteDestination(id);
 
