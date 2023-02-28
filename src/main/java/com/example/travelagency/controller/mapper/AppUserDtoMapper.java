@@ -1,6 +1,8 @@
 package com.example.travelagency.controller.mapper;
 
+import com.example.travelagency.controller.dto.trip.TripReadDto;
 import com.example.travelagency.controller.dto.user.AppUserDto;
+import com.example.travelagency.controller.dto.user.AppUserReadDto;
 import com.example.travelagency.model.AppUser;
 import com.example.travelagency.model.AppUserRole;
 import com.example.travelagency.model.Trip;
@@ -12,27 +14,61 @@ public class AppUserDtoMapper {
     private AppUserDtoMapper() {}
 
     public static AppUserDto mapAppUserToDto(AppUser appUser) {
+        if(appUser == null) return null;
         return AppUserDto.builder().id(appUser.getId()).firstName(appUser.getFirstName()).lastName(appUser.getLastName())
                 .passportNumber(appUser.getPassportNumber()).email(appUser.getEmail()).appUserRole(appUser.getAppUserRole())
                 .locked(appUser.getLocked()).enabled(appUser.getEnabled())
-                .tripsDto(TripDtoMapper.mapTripsToDtos(appUser.getTrips())).build();
+                .tripReadDtos(TripDtoMapper.mapTripsToTripReadDtos(appUser.getTrips())).build();
+    }
+
+    public static AppUser mapDtoToAppUser(Long id, AppUserDto appUser) {
+        if(appUser == null) return null;
+        return AppUser.builder().id(id).firstName(appUser.getFirstName()).lastName(appUser.getLastName())
+                .passportNumber(appUser.getPassportNumber()).email(appUser.getEmail()).appUserRole(appUser.getAppUserRole())
+                .locked(appUser.getLocked()).enabled(appUser.getEnabled())
+                .trips(TripDtoMapper.mapReadDtoTripsToTrips(appUser.getTripReadDtos())).build();
+    }
+
+    public static List<AppUserReadDto> mapAppUsersToAppUserReadDtos(List<AppUser> users) {
+        if (users == null) return null;
+        return users.stream()
+                .map(AppUserDtoMapper::mapAppUserToAppUserReadDto)
+                .toList();
+    }
+
+    public static AppUserReadDto mapAppUserToAppUserReadDto(AppUser appUser) {
+        if (appUser == null) return null;
+        return AppUserReadDto.builder().id(appUser.getId()).firstName(appUser.getFirstName()).lastName(appUser.getLastName())
+                .passportNumber(appUser.getPassportNumber()).email(appUser.getEmail()).appUserRole(appUser.getAppUserRole())
+                .locked(appUser.getLocked()).enabled(appUser.getEnabled())
+                .build();
     }
 
 
-    String email;
 
-    private AppUserRole appUserRole;
 
-    private Boolean locked;
-    private Boolean enabled;
-
-    private List<Trip> trips = new ArrayList<>();
-
-    public static List<AppUserDto> mapAppUsersToDtos(List<AppUser> AppUsers) {
-        return AppUsers.stream()
+    public static List<AppUserDto> mapAppUsersToDtos(List<AppUser> appUsers) {
+        if (appUsers == null) return null;
+        return appUsers.stream()
                 .map(AppUserDtoMapper::mapAppUserToDto)
                 .toList();
     }
+
+    public static List<AppUser> mapAppUserReadDtosToAppUsers(List<AppUserReadDto> appUsers) {
+        if (appUsers == null) return null;
+        return appUsers.stream()
+                .map(AppUserDtoMapper::mapAppUserReadDtoToAppUser)
+                .toList();
+    }
+
+    public static AppUser mapAppUserReadDtoToAppUser(AppUserReadDto appUser) {
+        if (appUser == null) return null;
+        return AppUser.builder().id(appUser.getId()).firstName(appUser.getFirstName()).lastName(appUser.getLastName())
+                .passportNumber(appUser.getPassportNumber()).email(appUser.getEmail()).appUserRole(appUser.getAppUserRole())
+                .locked(appUser.getLocked()).enabled(appUser.getEnabled()).trips((List.of()))
+                .build();
+    }
+
 
     /*public static AppUser mapDtoToAppUser(Long id, AppUserDto AppUserDto) {
 

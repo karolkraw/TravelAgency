@@ -26,6 +26,6 @@ public class GuideDto {
         @Size(min = 1, max = 50, message = "last name must be between 1 and 50 characters")
         String lastName;
 
-        private List<TripReadDto> trips = new ArrayList<>();
+        private List<TripReadDto> tripReadDtos = new ArrayList<>();
 
 }

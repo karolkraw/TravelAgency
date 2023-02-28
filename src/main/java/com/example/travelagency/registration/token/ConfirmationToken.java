@@ -3,7 +3,7 @@ package com.example.travelagency.registration.token;
 
 import com.example.travelagency.model.AppUser;
 import com.example.travelagency.service.AppUserService;
-import jakarta.persistence.*;
+import javax.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;

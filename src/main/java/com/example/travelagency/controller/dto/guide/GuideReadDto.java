@@ -11,7 +11,7 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class GuideNestedDto {
+public class GuideReadDto {
     Long id;
 
     @NotBlank(message = "last name is required")

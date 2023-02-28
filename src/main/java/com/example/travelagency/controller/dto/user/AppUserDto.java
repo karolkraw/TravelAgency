@@ -1,5 +1,7 @@
 package com.example.travelagency.controller.dto.user;
 
+import com.example.travelagency.controller.dto.trip.TripDto;
+import com.example.travelagency.controller.dto.trip.TripReadDto;
 import com.example.travelagency.model.AppUserRole;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
@@ -8,11 +10,14 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Getter
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class AppUserNestedDto {
+public class AppUserDto {
     private Long id;
 
     @NotBlank(message = "first name is required")
@@ -32,4 +37,6 @@ public class AppUserNestedDto {
 
     private Boolean locked;
     private Boolean enabled;
+
+    private List<TripReadDto> tripReadDtos = new ArrayList<>();
 }

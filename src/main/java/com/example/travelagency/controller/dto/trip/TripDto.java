@@ -1,10 +1,11 @@
 package com.example.travelagency.controller.dto.trip;
 
 import com.example.travelagency.controller.dto.destination.DestinationDto;
-import com.example.travelagency.controller.dto.guide.GuideNestedDto;
-import com.example.travelagency.controller.dto.user.AppUserDto;
-import com.example.travelagency.controller.dto.user.AppUserNestedDto;
+import com.example.travelagency.controller.dto.guide.GuideReadDto;
+import com.example.travelagency.controller.dto.user.AppUserReadDto;
 import javax.validation.constraints.Future;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -24,15 +25,17 @@ public class TripDto {
 
     private BigDecimal price;
 
-    //@JsonFormat(pattern = "dd/MM/yyyy")
+    @Future
+    @JsonFormat(pattern = "dd/MM/yyyy")
     private LocalDate departureDate;
 
-    //@JsonFormat(pattern = "dd/MM/yyyy")
+    @Future
+    @JsonFormat(pattern = "dd/MM/yyyy")
     private LocalDate returnDate;
 
     private DestinationDto destinationDto;
 
-    private GuideNestedDto guideDto;
+    private GuideReadDto guideReadDto;
 
-    private List<AppUserNestedDto> appUsersDto = new ArrayList<>();
+    private List<AppUserReadDto> appUserReadDtos = new ArrayList<>();
 }

@@ -17,7 +17,10 @@ import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.RequestBuilder;
+import org.springframework.web.util.UriComponents;
+import org.springframework.web.util.UriComponentsBuilder;
 
+import java.net.URI;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -95,12 +98,12 @@ public class DestinationRestControllerTest {
         assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
         assertThat(response.getContentAsString()).isEqualTo(objectMapper.writeValueAsString(destinationsDto));
     }
- // move to integration tests later
-    /*@Test
+
+    @Test
     public void shouldAddDestination() throws Exception {
         //given
         Long id = 1L;
-        Destination destination = new Destination(id, "Paris");
+        Destination destination = new Destination(null, "Paris");
         DestinationDto destinationDto = new DestinationDto(id, "Paris");
 
         RequestBuilder requestBuilder = post("/destinations/add/")
@@ -110,7 +113,7 @@ public class DestinationRestControllerTest {
         given(destinationService.addDestination(destination)).willReturn(destination);
 
         UriComponents uriComponents = UriComponentsBuilder
-                .fromHttpUrl("http://localhost:8080/get/{id}") // change it to get value from properties
+                .fromHttpUrl("http://localhost:8080/destinations/get/{id}") // change it to get value from properties
                 .buildAndExpand(destination.getId());
 
 
@@ -123,9 +126,9 @@ public class DestinationRestControllerTest {
 
         assertThat(response.getStatus()).isEqualTo(HttpStatus.CREATED.value());
         assertThat(expectedUri.toString()).isEqualTo(response.getHeader("location"));
-    }*/
+    }
 
-    @Test
+/*    @Test
     public void shouldReturnStatusCreatedInAddMethod() throws Exception {
         //given
         Long id = 1L;
@@ -143,7 +146,7 @@ public class DestinationRestControllerTest {
 
         //then
         assertThat(response.getStatus()).isEqualTo(HttpStatus.CREATED.value());
-    }
+    }*/
 
     @Test
     public void shouldReturnNoContentStatusWhenDeletedProperly() throws Exception {
@@ -179,14 +182,13 @@ public class DestinationRestControllerTest {
     public void shouldReturnNoContentStatusWhenUpdatedProperly() throws Exception {
         //given
         Long id = 1L;
-        Destination destination = new Destination(id, "Paris");
         DestinationDto destinationDto = new DestinationDto(id, "Paris");
 
         RequestBuilder requestBuilder = put("/destinations/update/" + id)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(destinationDto));
 
-        given(destinationService.updateDestination(destination)).willReturn(destination);
+        doNothing().when(destinationService).deleteDestination(id);
 
         //when
         MockHttpServletResponse response = mockMvc.perform(requestBuilder).andReturn().getResponse();

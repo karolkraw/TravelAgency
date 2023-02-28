@@ -1,37 +1,27 @@
 package com.example.travelagency.model;
 
-import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
+import javax.persistence.*;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Size;
 import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 
 @Data
+@Builder
+@AllArgsConstructor
 @NoArgsConstructor
 @Entity
 public class AppUser implements UserDetails {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    @NotBlank(message = "first name is required")
-    @Size(min = 1, max = 50, message = "first name must be between 1 and 50 characters")
     private String firstName;
-
-    @NotBlank(message = "last name is required")
-    @Size(min = 1, max = 50, message = "last name must be between 1 and 50 characters")
     private String lastName;
-
-    @NotBlank(message = "passport number is required")
     private String passportNumber;
     String email;
     String password;
@@ -44,7 +34,7 @@ public class AppUser implements UserDetails {
     @JoinTable(
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "trip_id"))
-    private Set<Trip> trips = new HashSet<>();
+    private List<Trip> trips = new ArrayList<>();
 
     public AppUser(String firstName,
                    String lastName,
@@ -95,6 +85,4 @@ public class AppUser implements UserDetails {
     public boolean isEnabled() {
         return enabled;
     }
-
-
 }
