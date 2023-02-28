@@ -1,14 +1,19 @@
 package com.example.travelagency.registration;
 
 import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping(path = "registration")
-@AllArgsConstructor
+//@RequiredArgsConstructor
 public class RegistrationController {
 
     private final RegistrationService registrationService;
+
+    public RegistrationController(RegistrationService registrationService) {
+        this.registrationService = registrationService;
+    }
 
     @PostMapping
     public String register(@RequestBody RegistrationRequest request) {
