@@ -1,16 +1,16 @@
 package com.example.travelagency.controller;
 
-import com.example.travelagency.controller.dto.destination.DestinationDto;
-import com.example.travelagency.controller.dto.guide.GuideDto;
-import com.example.travelagency.controller.dto.guide.GuideReadDto;
-import com.example.travelagency.controller.dto.trip.TripDto;
-import com.example.travelagency.controller.dto.trip.TripReadDto;
+import com.example.travelagency.destination.dto.DestinationDto;
+import com.example.travelagency.guide.dto.GuideDto;
+import com.example.travelagency.guide.dto.GuideReadDto;
+import com.example.travelagency.trip.dto.TripDto;
+import com.example.travelagency.trip.dto.TripReadDto;
 import com.example.travelagency.exception.GuideNotFoundException;
 import com.example.travelagency.exception.TripNotFoundException;
-import com.example.travelagency.model.Destination;
-import com.example.travelagency.model.Guide;
-import com.example.travelagency.model.Trip;
-import com.example.travelagency.service.TripService;
+import com.example.travelagency.destination.Destination;
+import com.example.travelagency.guide.Guide;
+import com.example.travelagency.trip.Trip;
+import com.example.travelagency.trip.TripService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.junit.jupiter.api.BeforeEach;
@@ -34,6 +34,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doThrow;
@@ -71,14 +72,14 @@ public class TripRestControllerTest {
                 .id(5L).price(BigDecimal.valueOf(150L))
                 .departureDate(LocalDate.now().plusDays(5))
                 .returnDate(LocalDate.now().plusDays(15))
-                .destinationDto(new DestinationDto(1L, "Paris"))
-                .guideReadDto(new GuideReadDto(id, "John", "Miller"))
+                .destination(new DestinationDto(1L, "Paris"))
+                .guide(new GuideReadDto(id, "John", "Miller"))
                 .build();
         tripReadDto = TripReadDto.builder()
                 .id(5L).price(BigDecimal.valueOf(150L))
                 .departureDate(LocalDate.now().plusDays(5))
                 .returnDate(LocalDate.now().plusDays(15))
-                .destinationDto(new DestinationDto(1L, "Paris")).build();
+                .destination(new DestinationDto(1L, "Paris")).build();
 
         trip2 = Trip.builder()
                 .id(6L).price(BigDecimal.valueOf(750L))
@@ -89,7 +90,7 @@ public class TripRestControllerTest {
                 .id(6L).price(BigDecimal.valueOf(750L))
                 .departureDate(LocalDate.now().plusDays(5))
                 .returnDate(LocalDate.now().plusDays(15))
-                .destinationDto(new DestinationDto(1L, "London")).build();
+                .destination(new DestinationDto(1L, "London")).build();
 
         guide = new Guide(id, "John", "Miller", List.of(trip2));
         guideDto = new GuideDto(id, "John", "Miller", List.of(tripReadDto));
@@ -110,7 +111,7 @@ public class TripRestControllerTest {
         //given
         Long id = 1L;
 
-        RequestBuilder requestBuilder = get("/trips/get/" + id);
+        RequestBuilder requestBuilder = get("/trips/admin/get/" + id);
 
         given(tripService.getTrip(id)).willReturn(trip);
 
@@ -126,7 +127,7 @@ public class TripRestControllerTest {
     public void shouldThrowTripNotFoundExceptionWhenValidIdNotExistsInGetMethod() throws Exception {
         //given
         Long id = 1L;
-        RequestBuilder requestBuilder = get("/trips/get/" + id);
+        RequestBuilder requestBuilder = get("/trips/admin/get/" + id);
 
         given(tripService.getTrip(id)).willThrow(TripNotFoundException.class);
 
@@ -143,8 +144,8 @@ public class TripRestControllerTest {
         List<Trip> trips = List.of(trip, trip2);
         List<TripDto> tripsDto = List.of(tripDto, tripDto2);
 
-        RequestBuilder requestBuilder = get("/trips/get/");
-        given(tripService.getAllTrips()).willReturn(trips);
+        RequestBuilder requestBuilder = get("/trips/admin/get/");
+        given(tripService.getAllTrips(0)).willReturn(trips);
 
         //when
         MockHttpServletResponse response = mockMvc.perform(requestBuilder).andReturn().getResponse();
@@ -157,22 +158,14 @@ public class TripRestControllerTest {
     @Test
     public void shouldReturnStatusCreatedInAddMethod() throws Exception {
         //given
-        Trip tripWithNullId = Trip.builder()
-                .id(null).price(BigDecimal.valueOf(150L))
-                .departureDate(LocalDate.now().plusDays(5))
-                .returnDate(LocalDate.now().plusDays(15))
-                .destination(new Destination(1L, "Paris"))
-                .guide(new Guide(1L, "John", "Miller", List.of()))
-                .build();
-
-        RequestBuilder requestBuilder = post("/trips/add/")
+        RequestBuilder requestBuilder = post("/trips/admin/add/")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(tripDto));
 
-        given(tripService.addTrip(tripWithNullId)).willReturn(trip);
+        given(tripService.addTrip(any(Trip.class))).willReturn(trip);
 
         UriComponents uriComponents = UriComponentsBuilder
-                .fromHttpUrl("http://localhost:8080/trips/get/{id}") // change it to get value from properties
+                .fromHttpUrl("http://localhost:8080/trips/admin/get/{id}") // change it to get value from properties
                 .buildAndExpand(trip.getId());
 
         //when
@@ -190,7 +183,7 @@ public class TripRestControllerTest {
     public void shouldReturnNoContentStatusWhenUpdatedProperly() throws Exception {
         //given
         Long id = 1L;
-        RequestBuilder requestBuilder = put("/trips/update/" + id)
+        RequestBuilder requestBuilder = put("/trips/admin/update/" + id)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(tripDto));
 
@@ -207,7 +200,7 @@ public class TripRestControllerTest {
     public void shouldReturnNoContentStatusWhenDeletedProperly() throws Exception {
         //given
         Long id = 1L;
-        RequestBuilder requestBuilder = delete("/trips/delete/" + id);
+        RequestBuilder requestBuilder = delete("/trips/admin/delete/" + id);
 
         doNothing().when(tripService).deleteTrip(id);
 
@@ -222,7 +215,7 @@ public class TripRestControllerTest {
     public void shouldThrowTripNotFoundExceptionWhenValidIdNotExistsInDeleteMethod() throws Exception {
         //given
         Long id = 1L;
-        RequestBuilder requestBuilder = delete("/trips/delete/" + id);
+        RequestBuilder requestBuilder = delete("/trips/admin/delete/" + id);
 
         doThrow(GuideNotFoundException.class).when(tripService).deleteTrip(id);
 

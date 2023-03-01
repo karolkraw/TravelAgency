@@ -1,13 +1,13 @@
 package com.example.travelagency.controller;
 
-import com.example.travelagency.controller.dto.destination.DestinationDto;
-import com.example.travelagency.controller.dto.guide.GuideDto;
-import com.example.travelagency.controller.dto.trip.TripReadDto;
+import com.example.travelagency.destination.dto.DestinationDto;
+import com.example.travelagency.guide.dto.GuideDto;
+import com.example.travelagency.trip.dto.TripReadDto;
 import com.example.travelagency.exception.GuideNotFoundException;
-import com.example.travelagency.model.Destination;
-import com.example.travelagency.model.Guide;
-import com.example.travelagency.model.Trip;
-import com.example.travelagency.service.GuideService;
+import com.example.travelagency.destination.Destination;
+import com.example.travelagency.guide.Guide;
+import com.example.travelagency.trip.Trip;
+import com.example.travelagency.guide.GuideService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.junit.jupiter.api.BeforeEach;
@@ -29,6 +29,7 @@ import java.math.BigDecimal;
 import java.net.URI;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
@@ -70,7 +71,7 @@ public class GuideRestControllerTest {
                 .id(5L).price(BigDecimal.valueOf(150L))
                 .departureDate(LocalDate.now().plusDays(5))
                 .returnDate(LocalDate.now().plusDays(15))
-                .destinationDto(new DestinationDto(1L, "Paris")).build();
+                .destination(new DestinationDto(1L, "Paris")).build();
 
         trip2 = Trip.builder()
                 .id(6L).price(BigDecimal.valueOf(750L))
@@ -81,7 +82,7 @@ public class GuideRestControllerTest {
                 .id(6L).price(BigDecimal.valueOf(750L))
                 .departureDate(LocalDate.now().plusDays(5))
                 .returnDate(LocalDate.now().plusDays(15))
-                .destinationDto(new DestinationDto(1L, "London")).build();
+                .destination(new DestinationDto(1L, "London")).build();
 
         Long id = 1L;
 
@@ -99,7 +100,7 @@ public class GuideRestControllerTest {
 
         RequestBuilder requestBuilder = get("/guides/get/" + id);
 
-        given(guideService.getGuide(id)).willReturn(guide);
+        given(guideService.getGuide(id)).willReturn(Optional.ofNullable(guide));
 
         //when
         MockHttpServletResponse response = mockMvc.perform(requestBuilder).andReturn().getResponse();

@@ -1,15 +1,11 @@
 package com.example.travelagency.registration;
 
 import com.example.travelagency.email.EmailSender;
-import com.example.travelagency.email.EmailService;
-import com.example.travelagency.model.AppUser;
-import com.example.travelagency.model.AppUserRole;
+import com.example.travelagency.user.AppUser;
+import com.example.travelagency.user.AppUserRole;
 import com.example.travelagency.registration.token.ConfirmationToken;
 import com.example.travelagency.registration.token.ConfirmationTokenService;
-import com.example.travelagency.service.AppUserService;
-import com.example.travelagency.service.UserDetailsServiceImpl;
-import lombok.AllArgsConstructor;
-import org.springframework.security.core.userdetails.UserDetailsService;
+import com.example.travelagency.user.UserDetailsServiceImpl;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

@@ -1,14 +1,14 @@
 package com.example.travelagency.controller;
 
-import com.example.travelagency.controller.dto.destination.DestinationDto;
-import com.example.travelagency.controller.dto.trip.TripReadDto;
-import com.example.travelagency.controller.dto.user.AppUserDto;
+import com.example.travelagency.destination.dto.DestinationDto;
+import com.example.travelagency.trip.dto.TripReadDto;
+import com.example.travelagency.user.dto.AppUserDto;
 import com.example.travelagency.exception.AppUserNotFoundException;
-import com.example.travelagency.model.AppUser;
-import com.example.travelagency.model.AppUserRole;
-import com.example.travelagency.model.Destination;
-import com.example.travelagency.model.Trip;
-import com.example.travelagency.service.AppUserService;
+import com.example.travelagency.user.AppUser;
+import com.example.travelagency.user.AppUserRole;
+import com.example.travelagency.destination.Destination;
+import com.example.travelagency.trip.Trip;
+import com.example.travelagency.user.AppUserService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.junit.jupiter.api.BeforeEach;
@@ -75,12 +75,12 @@ public class AppUserRestControllerTest {
                 .id(5L).price(BigDecimal.valueOf(150L))
                 .departureDate(LocalDate.now().plusDays(5))
                 .returnDate(LocalDate.now().plusDays(15))
-                .destinationDto(new DestinationDto(1L, "Paris")).build();
+                .destination(new DestinationDto(1L, "Paris")).build();
         tripReadDto2 = TripReadDto.builder()
                 .id(6L).price(BigDecimal.valueOf(750L))
                 .departureDate(LocalDate.now().plusDays(5))
                 .returnDate(LocalDate.now().plusDays(15))
-                .destinationDto(new DestinationDto(1L, "London")).build();
+                .destination(new DestinationDto(1L, "London")).build();
 
         user = AppUser.builder().id(1L).firstName("John").lastName("Miller")
                 .passportNumber("abc1234").appUserRole(AppUserRole.USER)
@@ -94,11 +94,11 @@ public class AppUserRestControllerTest {
         userDto = AppUserDto.builder().id(1L).firstName("John").lastName("Miller")
                 .passportNumber("abc1234").appUserRole(AppUserRole.USER)
                 .email("johnMil4567@gmail.com")
-                .locked(false).enabled(true).tripReadDtos(List.of(tripReadDto, tripReadDto2)).build();
+                .locked(false).enabled(true).trips(List.of(tripReadDto, tripReadDto2)).build();
         userDto2 = AppUserDto.builder().id(2L).firstName("Joshua").lastName("Hamilton")
                 .passportNumber("acb4567").appUserRole(AppUserRole.USER)
                 .email("jashHamilton123@gmail.com")
-                .locked(false).enabled(true).tripReadDtos(List.of(tripReadDto, tripReadDto2)).build();
+                .locked(false).enabled(true).trips(List.of(tripReadDto, tripReadDto2)).build();
     }
 
     @Test

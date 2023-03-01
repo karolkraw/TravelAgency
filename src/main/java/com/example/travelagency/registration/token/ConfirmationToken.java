@@ -1,8 +1,8 @@
 package com.example.travelagency.registration.token;
 
 
-import com.example.travelagency.model.AppUser;
-import com.example.travelagency.service.AppUserService;
+import com.example.travelagency.user.AppUser;
+
 import javax.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

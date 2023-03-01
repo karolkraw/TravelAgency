@@ -1,10 +1,10 @@
 package com.example.travelagency.controller;
 
 
-import com.example.travelagency.controller.dto.destination.DestinationDto;
+import com.example.travelagency.destination.dto.DestinationDto;
 import com.example.travelagency.exception.DestinationNotFoundException;
-import com.example.travelagency.model.Destination;
-import com.example.travelagency.service.DestinationService;
+import com.example.travelagency.destination.Destination;
+import com.example.travelagency.destination.DestinationService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,7 +24,6 @@ import java.net.URI;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doThrow;
