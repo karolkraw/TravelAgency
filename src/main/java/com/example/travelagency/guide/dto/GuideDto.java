@@ -3,14 +3,14 @@ package com.example.travelagency.guide.dto;
 import com.example.travelagency.trip.dto.TripReadDto;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+
+import lombok.*;
 
 import java.util.ArrayList;
 import java.util.List;
 
+@Builder
+@EqualsAndHashCode
 @Getter
 @Setter
 @AllArgsConstructor
@@ -27,5 +27,4 @@ public class GuideDto {
         String lastName;
 
         private List<TripReadDto> trips = new ArrayList<>();
-
 }

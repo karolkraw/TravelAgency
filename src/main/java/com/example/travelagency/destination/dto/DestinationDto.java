@@ -3,13 +3,17 @@ package com.example.travelagency.destination.dto;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Positive;
 import javax.validation.constraints.Size;
+
 import lombok.*;
 
-@Data
+
+@Getter
+@Setter
+@EqualsAndHashCode
+@Builder
 @AllArgsConstructor
 @NoArgsConstructor
 public class DestinationDto {
-    @Positive
     Long id;
 
     @NotBlank(message = "destination is required")

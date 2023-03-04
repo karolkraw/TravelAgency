@@ -10,9 +10,9 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.*;
 
-
 @Getter
 @Setter
+@EqualsAndHashCode
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
@@ -85,5 +85,15 @@ public class AppUser implements UserDetails {
     @Override
     public boolean isEnabled() {
         return enabled;
+    }
+
+    public void removeTrip(Trip trip) {
+        trips.remove(trip);
+        trip.getAppUsers().remove(this);
+    }
+
+    public void addTrip(Trip trip) {
+        trips.add(trip);
+        trip.getAppUsers().add(this);
     }
 }

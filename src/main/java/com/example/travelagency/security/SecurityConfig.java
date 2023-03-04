@@ -25,7 +25,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
     }
 
-
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
         super.configure(auth);
@@ -37,8 +36,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .and().authorizeRequests()
                 .antMatchers("/registration/**").permitAll()
                 .antMatchers("/guides/**").permitAll()
-                /*.antMatchers("/destinations/**").hasRole("USER")
-                .antMatchers("/users/**").hasRole("ADMIN")*/
+                .antMatchers("/destinations/**").permitAll()
+                .antMatchers("/users/**").permitAll()
                 .anyRequest().authenticated()
                 .and()
                 .formLogin().and().httpBasic()

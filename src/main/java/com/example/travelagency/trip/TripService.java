@@ -1,11 +1,10 @@
 package com.example.travelagency.trip;
 
+import com.example.travelagency.exception.AppUserNotFoundException;
 import com.example.travelagency.exception.GuideNotFoundException;
 import com.example.travelagency.exception.TripNotFoundException;
 import com.example.travelagency.user.AppUser;
-import com.example.travelagency.trip.Trip;
 import com.example.travelagency.user.AppUserRepository;
-import com.example.travelagency.trip.TripRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -25,6 +24,14 @@ public class TripService {
         return tripRepository.save(trip);
     }
 
+    @Transactional
+    public Trip addUserToTrip(Long tripId, Long userId) {
+        Trip trip = tripRepository.findById(tripId).orElseThrow(() -> new TripNotFoundException(tripId));
+        AppUser user = appUserRepository.findById(userId).orElseThrow(() -> new AppUserNotFoundException(userId));
+        trip.addUser(user);
+        return tripRepository.save(trip);
+    }
+
     public Trip getTrip(Long id) {
         return tripRepository.findById(id).orElseThrow(() -> new TripNotFoundException(id));
     }
@@ -34,6 +41,7 @@ public class TripService {
     }
 
     // users extracted in another query to eliminate N + 1 problem
+    @Transactional
     public List<Trip> getAllTripsWithUsers(int page) {
         List<Trip> trips = tripRepository.findAllTrips(PageRequest.of(page, PAGE_SIZE));
         List<Long> ids = trips.stream()
@@ -50,7 +58,7 @@ public class TripService {
                 .toList();
     }
 
-
+    @Transactional
     public void updateTrip(Trip trip) {
         Trip tripUpdated = tripRepository.findById(trip.getId())
                 .orElseThrow(() -> new GuideNotFoundException(trip.getId()));
@@ -58,6 +66,7 @@ public class TripService {
         tripUpdated.setDepartureDate(trip.getDepartureDate());
         tripUpdated.setReturnDate(trip.getReturnDate());
         tripUpdated.setDestination(trip.getDestination());
+        tripUpdated.getGuide().removeTrip(tripUpdated);
         tripUpdated.setGuide(trip.getGuide());
         tripRepository.save(tripUpdated);
     }
@@ -65,10 +74,10 @@ public class TripService {
     @Transactional
     public void deleteTrip(Long id) {
         Trip trip = tripRepository.findById(id).orElseThrow(() -> new TripNotFoundException(id));
-        //trip.getAppUsers().forEach(trip::removeUser);
         for(AppUser user: new ArrayList<>(trip.getAppUsers())) {
             trip.removeUser(user);
         }
+        trip.getGuide().removeTrip(trip);
         tripRepository.deleteById(id);
     }
 }

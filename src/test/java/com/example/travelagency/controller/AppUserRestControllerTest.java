@@ -1,28 +1,29 @@
 package com.example.travelagency.controller;
 
-import com.example.travelagency.destination.dto.DestinationDto;
-import com.example.travelagency.trip.dto.TripReadDto;
-import com.example.travelagency.user.dto.AppUserDto;
-import com.example.travelagency.exception.AppUserNotFoundException;
-import com.example.travelagency.user.AppUser;
-import com.example.travelagency.user.AppUserRole;
 import com.example.travelagency.destination.Destination;
+import com.example.travelagency.destination.dto.DestinationDto;
+import com.example.travelagency.exception.AppUserNotFoundException;
 import com.example.travelagency.trip.Trip;
+import com.example.travelagency.trip.dto.TripReadDto;
+import com.example.travelagency.user.AppUser;
+import com.example.travelagency.user.AppUserRestController;
+import com.example.travelagency.user.AppUserRole;
 import com.example.travelagency.user.AppUserService;
+import com.example.travelagency.user.dto.AppUserDto;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
-import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.RequestBuilder;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -30,18 +31,17 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 
-@SpringBootTest
-@AutoConfigureMockMvc
-@WithMockUser(roles = {"ADMIN"})
+@ExtendWith(MockitoExtension.class)
 public class AppUserRestControllerTest {
-    @MockBean
+    @Mock
     private AppUserService appUserService;
 
-    @Autowired
+    @InjectMocks
+    private AppUserRestController appUserRestController;
+
     private MockMvc mockMvc;
 
     ObjectMapper objectMapper = new ObjectMapper();
@@ -57,6 +57,7 @@ public class AppUserRestControllerTest {
 
     @BeforeEach
     public void setup() {
+        mockMvc = MockMvcBuilders.standaloneSetup(appUserRestController).build();
         objectMapper.registerModule(new JavaTimeModule());
 
         trip = Trip.builder()
@@ -106,7 +107,7 @@ public class AppUserRestControllerTest {
         //given
         Long id = 1L;
 
-        RequestBuilder requestBuilder = get("/users/get/" + id);
+        RequestBuilder requestBuilder = get("/users/" + id);
 
         given(appUserService.getUser(id)).willReturn(user);
 
@@ -122,7 +123,7 @@ public class AppUserRestControllerTest {
     public void shouldThrowAppUserNotFoundExceptionWhenValidIdNotExistsInGetMethod() throws Exception {
         //given
         Long id = 1L;
-        RequestBuilder requestBuilder = get("/users/get/" + id);
+        RequestBuilder requestBuilder = get("/users/" + id);
 
         given(appUserService.getUser(id)).willThrow(AppUserNotFoundException.class);
 
@@ -139,7 +140,7 @@ public class AppUserRestControllerTest {
         List<AppUser> users = List.of(user, user2);
         List<AppUserDto> usersDto = List.of(userDto, userDto2);
 
-        RequestBuilder requestBuilder = get("/users/get/");
+        RequestBuilder requestBuilder = get("/users/");
         given(appUserService.getAllUsers()).willReturn(users);
 
         //when
@@ -153,17 +154,18 @@ public class AppUserRestControllerTest {
     @Test
     public void shouldReturnNoContentStatusWhenUpdatedProperly() throws Exception {
         //given
-        Long id = 1L;
-        RequestBuilder requestBuilder = put("/users/update/" + id)
+        long id = 1L;
+        user.setPassword(null);
+        RequestBuilder requestBuilder = put("/users/" + id)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(userDto));
 
-        doNothing().when(appUserService).deleteUser(id);
 
         //when
         MockHttpServletResponse response = mockMvc.perform(requestBuilder).andReturn().getResponse();
 
         //then
+        verify(appUserService).updateUser(user);
         assertThat(response.getStatus()).isEqualTo(HttpStatus.NO_CONTENT.value());
     }
 
@@ -171,14 +173,13 @@ public class AppUserRestControllerTest {
     public void shouldReturnNoContentStatusWhenDeletedProperly() throws Exception {
         //given
         Long id = 1L;
-        RequestBuilder requestBuilder = delete("/users/delete/" + id);
-
-        doNothing().when(appUserService).deleteUser(id);
+        RequestBuilder requestBuilder = delete("/users/" + id);
 
         //when
         MockHttpServletResponse response = mockMvc.perform(requestBuilder).andReturn().getResponse();
 
         //then
+        verify(appUserService).deleteUser(id);
         assertThat(response.getStatus()).isEqualTo(HttpStatus.NO_CONTENT.value());
     }
 
@@ -186,7 +187,7 @@ public class AppUserRestControllerTest {
     public void shouldThrowAppUserNotFoundExceptionWhenValidIdNotExistsInDeleteMethod() throws Exception {
         //given
         Long id = 1L;
-        RequestBuilder requestBuilder = delete("/users/delete/" + id);
+        RequestBuilder requestBuilder = delete("/users/" + id);
 
         doThrow(AppUserNotFoundException.class).when(appUserService).deleteUser(id);
 

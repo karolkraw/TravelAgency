@@ -1,53 +1,53 @@
 package com.example.travelagency.controller;
 
-import com.example.travelagency.destination.dto.DestinationDto;
-import com.example.travelagency.guide.dto.GuideDto;
-import com.example.travelagency.trip.dto.TripReadDto;
-import com.example.travelagency.exception.GuideNotFoundException;
 import com.example.travelagency.destination.Destination;
+import com.example.travelagency.destination.dto.DestinationDto;
+import com.example.travelagency.exception.GuideNotFoundException;
 import com.example.travelagency.guide.Guide;
-import com.example.travelagency.trip.Trip;
+import com.example.travelagency.guide.GuideRestController;
 import com.example.travelagency.guide.GuideService;
+import com.example.travelagency.guide.dto.GuideDto;
+import com.example.travelagency.trip.Trip;
+import com.example.travelagency.trip.dto.TripReadDto;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
-import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.RequestBuilder;
-import org.springframework.web.util.UriComponents;
-import org.springframework.web.util.UriComponentsBuilder;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import java.math.BigDecimal;
-import java.net.URI;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 
-@SpringBootTest
-@AutoConfigureMockMvc
-@WithMockUser(roles = {"ADMIN"})
+@ExtendWith(MockitoExtension.class)
 public class GuideRestControllerTest {
-    @MockBean
+    @Mock
     private GuideService guideService;
 
-    @Autowired
+    @InjectMocks
+    private GuideRestController guideRestController;
+
     private MockMvc mockMvc;
 
     ObjectMapper objectMapper = new ObjectMapper();
+
 
     Guide guide;
     Guide guide2;
@@ -60,7 +60,9 @@ public class GuideRestControllerTest {
 
     @BeforeEach
     public void setup() {
+        mockMvc = MockMvcBuilders.standaloneSetup(guideRestController).build();
         objectMapper.registerModule(new JavaTimeModule());
+
 
         trip = Trip.builder()
                 .id(5L).price(BigDecimal.valueOf(150L))
@@ -98,7 +100,7 @@ public class GuideRestControllerTest {
         //given
         Long id = 1L;
 
-        RequestBuilder requestBuilder = get("/guides/get/" + id);
+        RequestBuilder requestBuilder = get("/guides/" + id);
 
         given(guideService.getGuide(id)).willReturn(Optional.ofNullable(guide));
 
@@ -115,7 +117,8 @@ public class GuideRestControllerTest {
         //given
         List<Guide> guides = List.of(guide, guide2);
         List<GuideDto> guidesDto = List.of(guideDto, guideDto2);
-        RequestBuilder requestBuilder = get("/guides/get/");
+        RequestBuilder requestBuilder = get("/guides/");
+
         given(guideService.getAllGuides()).willReturn(guides);
 
         //when
@@ -130,7 +133,7 @@ public class GuideRestControllerTest {
     public void shouldThrowGuideNotFoundExceptionWhenValidIdNotExistsInGetMethod() throws Exception {
         //given
         Long id = 1L;
-        RequestBuilder requestBuilder = get("/guides/get/" + id);
+        RequestBuilder requestBuilder = get("/guides/" + id);
 
         given(guideService.getGuide(id)).willThrow(GuideNotFoundException.class);
 
@@ -144,42 +147,34 @@ public class GuideRestControllerTest {
     @Test
     public void shouldReturnStatusCreatedInAddMethod() throws Exception {
         //given
-        Guide guideWithNullId = new Guide(null, "John", "Miller", List.of(trip, trip2));
-        RequestBuilder requestBuilder = post("/guides/add/")
+        RequestBuilder requestBuilder = post("/guides/")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(guideDto));
 
-        given(guideService.addGuide(guideWithNullId)).willReturn(guide);
+        given(guideService.addGuide(any(Guide.class))).willReturn(guide);
 
-        UriComponents uriComponents = UriComponentsBuilder
-                .fromHttpUrl("http://localhost:8080/guides/get/{id}") // change it to get value from properties
-                .buildAndExpand(guide.getId());
 
         //when
         MockHttpServletResponse response = mockMvc.perform(requestBuilder).andReturn().getResponse();
 
         //then
-        URI expectedUri = uriComponents.toUri();
-
-
         assertThat(response.getStatus()).isEqualTo(HttpStatus.CREATED.value());
-        assertThat(expectedUri.toString()).isEqualTo(response.getHeader("location"));
+        assertThat(response.getContentAsString()).isEqualTo(objectMapper.writeValueAsString(guideDto));
     }
 
     @Test
     public void shouldReturnNoContentStatusWhenUpdatedProperly() throws Exception {
         //given
-        Long id = 1L;
-        RequestBuilder requestBuilder = put("/guides/update/" + id)
+        long id = 1L;
+        RequestBuilder requestBuilder = put("/guides/" + id)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(guideDto));
-
-        doNothing().when(guideService).deleteGuide(id);
 
         //when
         MockHttpServletResponse response = mockMvc.perform(requestBuilder).andReturn().getResponse();
 
         //then
+        verify(guideService).updateGuide(guide);
         assertThat(response.getStatus()).isEqualTo(HttpStatus.NO_CONTENT.value());
     }
 
@@ -187,24 +182,23 @@ public class GuideRestControllerTest {
     public void shouldReturnNoContentStatusWhenDeletedProperly() throws Exception {
         //given
         Long id = 1L;
-        RequestBuilder requestBuilder = delete("/guides/delete/" + id);
-
-        doNothing().when(guideService).deleteGuide(id);
+        RequestBuilder requestBuilder = delete("/guides/" + id);
 
         //when
         MockHttpServletResponse response = mockMvc.perform(requestBuilder).andReturn().getResponse();
 
         //then
+        verify(guideService).deleteGuide(id);
         assertThat(response.getStatus()).isEqualTo(HttpStatus.NO_CONTENT.value());
     }
 
     @Test
     public void shouldThrowGuideNotFoundExceptionWhenValidIdNotExistsInDeleteMethod() throws Exception {
         //given
-        Long id = 1L;
-        RequestBuilder requestBuilder = delete("/guide/delete/" + id);
+        long id = 1L;
+        RequestBuilder requestBuilder = delete("/guides/" + id);
 
-        doThrow(GuideNotFoundException.class).when(guideService).deleteGuide(id);
+        doThrow(new GuideNotFoundException(id)).when(guideService).deleteGuide(id);
 
         //when
         MockHttpServletResponse response = mockMvc.perform(requestBuilder).andReturn().getResponse();

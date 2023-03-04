@@ -1,21 +1,24 @@
 package com.example.travelagency.trip.dto;
 
 import com.example.travelagency.destination.dto.DestinationDto;
-import javax.validation.constraints.Future;
-
+import com.example.travelagency.guide.dto.GuideReadDto;
+import com.example.travelagency.user.dto.AppUserReadDto;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.*;
 
+import javax.validation.constraints.Future;
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
-
-@Builder
 @Getter
+@Setter
 @EqualsAndHashCode
+@Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class TripReadDto {
+public class TripRequestDto {
     private Long id;
 
     private BigDecimal price;
@@ -29,4 +32,6 @@ public class TripReadDto {
     private LocalDate returnDate;
 
     private DestinationDto destination;
+
+    private GuideReadDto guide;
 }

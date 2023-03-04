@@ -5,6 +5,7 @@ import com.example.travelagency.destination.Destination;
 import com.example.travelagency.destination.DestinationRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -26,12 +27,14 @@ public class DestinationService {
         return destinationRepository.findAll();
     }
 
+    @Transactional
     public void deleteDestination(long id) {
         destinationRepository.findById(id)
                 .orElseThrow(() -> new DestinationNotFoundException(id));
         destinationRepository.deleteById(id);
     }
 
+    @Transactional
     public void updateDestination(Destination destination) {
         Destination updatedDestination = destinationRepository.findById(destination.getId())
                 .orElseThrow(() -> new DestinationNotFoundException(destination.getId()));

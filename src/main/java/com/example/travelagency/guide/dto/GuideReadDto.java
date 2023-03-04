@@ -2,13 +2,12 @@ package com.example.travelagency.guide.dto;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
 
+import lombok.*;
+
+@Builder
+@EqualsAndHashCode
 @Getter
-@Setter
 @AllArgsConstructor
 @NoArgsConstructor
 public class GuideReadDto {

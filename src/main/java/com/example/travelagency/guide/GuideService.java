@@ -1,12 +1,14 @@
 package com.example.travelagency.guide;
 
+import com.example.travelagency.destination.Destination;
+import com.example.travelagency.destination.DestinationRepository;
 import com.example.travelagency.exception.GuideNotFoundException;
-import com.example.travelagency.guide.Guide;
 import com.example.travelagency.trip.Trip;
-import com.example.travelagency.guide.GuideRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -15,13 +17,13 @@ import java.util.Optional;
 public class GuideService {
     private final GuideRepository guideRepository;
 
+    @Transactional
     public Guide addGuide(Guide guide) {
         guide.getTrips().forEach(a -> a.setGuide(guide));
         return guideRepository.save(guide);
     }
 
-
-
+    @Transactional
     public void updateGuide(Guide guide) {
         Guide guideUpdated = guideRepository.findById(guide.getId())
                 .orElseThrow(() -> new GuideNotFoundException(guide.getId()));
@@ -30,14 +32,12 @@ public class GuideService {
         guideRepository.save(guideUpdated);
     }
 
+    @Transactional
     public Guide addTripToGuide(Long guideId, Trip trip) {
-        /*Guide guide = guideRepository.findById(guideId).orElseThrow("guide not found exception");
+        Guide guide = guideRepository.findById(guideId).orElseThrow(() -> new GuideNotFoundException(guideId));
         trip.setGuide(guide);
-        guide.getTrips().add(trip);*/
-        //tripRepository.save(trip); -> dziala dirty checking?
-        //guideRepository.save(guide); -> dziala dirty checking?
-        //return guide;
-        return new Guide();
+        guide.getTrips().add(trip);
+        return guideRepository.save(guide);
     }
 
     public Optional<Guide> getGuide(Long id) {
@@ -48,7 +48,12 @@ public class GuideService {
         return guideRepository.findAll();
     }
 
+    @Transactional
     public void deleteGuide(Long id) {
+        Guide guide = guideRepository.findById(id).orElseThrow(() -> new GuideNotFoundException(id));
+        for(Trip trip: new ArrayList<>(guide.getTrips())) {
+            guide.removeTrip(trip);
+        }
         guideRepository.deleteById(id);
     }
 }

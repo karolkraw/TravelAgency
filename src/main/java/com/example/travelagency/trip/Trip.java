@@ -14,6 +14,7 @@ import java.util.List;
 
 @Getter
 @Setter
+@EqualsAndHashCode
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
@@ -30,13 +31,13 @@ public class Trip {
 
     private LocalDate returnDate;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
     private Destination destination;
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
     Guide guide;
 
-    @ManyToMany(mappedBy = "trips")
+    @ManyToMany(mappedBy = "trips", cascade = CascadeType.MERGE)
     private List<AppUser> appUsers = new ArrayList<>();
 
     public void removeUser(AppUser user) {
@@ -44,7 +45,10 @@ public class Trip {
         user.getTrips().remove(this);
     }
 
-
+    public void addUser(AppUser user) {
+        appUsers.add(user);
+        user.getTrips().add(this);
+    }
 }
 
 

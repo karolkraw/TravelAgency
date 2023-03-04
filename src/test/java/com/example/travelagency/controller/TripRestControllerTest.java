@@ -1,54 +1,51 @@
 package com.example.travelagency.controller;
 
+import com.example.travelagency.destination.Destination;
 import com.example.travelagency.destination.dto.DestinationDto;
-import com.example.travelagency.guide.dto.GuideDto;
-import com.example.travelagency.guide.dto.GuideReadDto;
-import com.example.travelagency.trip.dto.TripDto;
-import com.example.travelagency.trip.dto.TripReadDto;
 import com.example.travelagency.exception.GuideNotFoundException;
 import com.example.travelagency.exception.TripNotFoundException;
-import com.example.travelagency.destination.Destination;
 import com.example.travelagency.guide.Guide;
+import com.example.travelagency.guide.dto.GuideDto;
+import com.example.travelagency.guide.dto.GuideReadDto;
 import com.example.travelagency.trip.Trip;
+import com.example.travelagency.trip.TripAdminRestController;
 import com.example.travelagency.trip.TripService;
+import com.example.travelagency.trip.dto.TripDto;
+import com.example.travelagency.trip.dto.TripReadDto;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
-import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.RequestBuilder;
-import org.springframework.web.util.UriComponents;
-import org.springframework.web.util.UriComponentsBuilder;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import java.math.BigDecimal;
-import java.net.URI;
 import java.time.LocalDate;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 
-@SpringBootTest
-@AutoConfigureMockMvc
-@WithMockUser
+@ExtendWith(MockitoExtension.class)
 public class TripRestControllerTest {
-    @MockBean
+    @Mock
     private TripService tripService;
 
-    @Autowired
+    @InjectMocks
+    private TripAdminRestController tripAdminRestController;
+
     private MockMvc mockMvc;
 
     ObjectMapper objectMapper = new ObjectMapper();
@@ -64,7 +61,9 @@ public class TripRestControllerTest {
 
     @BeforeEach
     public void setup() {
+        mockMvc = MockMvcBuilders.standaloneSetup(tripAdminRestController).build();
         objectMapper.registerModule(new JavaTimeModule());
+
 
         Long id = 1L;
 
@@ -111,7 +110,7 @@ public class TripRestControllerTest {
         //given
         Long id = 1L;
 
-        RequestBuilder requestBuilder = get("/trips/admin/get/" + id);
+        RequestBuilder requestBuilder = get("/admin/trips/" + id);
 
         given(tripService.getTrip(id)).willReturn(trip);
 
@@ -127,7 +126,7 @@ public class TripRestControllerTest {
     public void shouldThrowTripNotFoundExceptionWhenValidIdNotExistsInGetMethod() throws Exception {
         //given
         Long id = 1L;
-        RequestBuilder requestBuilder = get("/trips/admin/get/" + id);
+        RequestBuilder requestBuilder = get("/admin/trips/" + id);
 
         given(tripService.getTrip(id)).willThrow(TripNotFoundException.class);
 
@@ -144,8 +143,8 @@ public class TripRestControllerTest {
         List<Trip> trips = List.of(trip, trip2);
         List<TripDto> tripsDto = List.of(tripDto, tripDto2);
 
-        RequestBuilder requestBuilder = get("/trips/admin/get/");
-        given(tripService.getAllTrips(0)).willReturn(trips);
+        RequestBuilder requestBuilder = get("/admin/trips/");
+        given(tripService.getAllTripsWithUsers(0)).willReturn(trips);
 
         //when
         MockHttpServletResponse response = mockMvc.perform(requestBuilder).andReturn().getResponse();
@@ -158,41 +157,41 @@ public class TripRestControllerTest {
     @Test
     public void shouldReturnStatusCreatedInAddMethod() throws Exception {
         //given
-        RequestBuilder requestBuilder = post("/trips/admin/add/")
+        RequestBuilder requestBuilder = post("/admin/trips/")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(tripDto));
 
         given(tripService.addTrip(any(Trip.class))).willReturn(trip);
 
-        UriComponents uriComponents = UriComponentsBuilder
-                .fromHttpUrl("http://localhost:8080/trips/admin/get/{id}") // change it to get value from properties
-                .buildAndExpand(trip.getId());
-
         //when
         MockHttpServletResponse response = mockMvc.perform(requestBuilder).andReturn().getResponse();
 
         //then
-        URI expectedUri = uriComponents.toUri();
-
-
         assertThat(response.getStatus()).isEqualTo(HttpStatus.CREATED.value());
-        assertThat(expectedUri.toString()).isEqualTo(response.getHeader("location"));
+        assertThat(response.getContentAsString()).isEqualTo(objectMapper.writeValueAsString(tripDto));
     }
 
     @Test
     public void shouldReturnNoContentStatusWhenUpdatedProperly() throws Exception {
         //given
-        Long id = 1L;
-        RequestBuilder requestBuilder = put("/trips/admin/update/" + id)
+        long id = 5L;
+        trip = Trip.builder()
+                .id(id).price(BigDecimal.valueOf(150L))
+                .departureDate(LocalDate.now().plusDays(5))
+                .returnDate(LocalDate.now().plusDays(15))
+                .destination(new Destination(1L, "Paris"))
+                .guide(new Guide(1L, "John", "Miller", List.of()))
+                .build();
+
+        RequestBuilder requestBuilder = put("/admin/trips/" + id)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(tripDto));
-
-        doNothing().when(tripService).deleteTrip(id);
 
         //when
         MockHttpServletResponse response = mockMvc.perform(requestBuilder).andReturn().getResponse();
 
         //then
+        verify(tripService).updateTrip(trip);
         assertThat(response.getStatus()).isEqualTo(HttpStatus.NO_CONTENT.value());
     }
 
@@ -200,9 +199,7 @@ public class TripRestControllerTest {
     public void shouldReturnNoContentStatusWhenDeletedProperly() throws Exception {
         //given
         Long id = 1L;
-        RequestBuilder requestBuilder = delete("/trips/admin/delete/" + id);
-
-        doNothing().when(tripService).deleteTrip(id);
+        RequestBuilder requestBuilder = delete("/admin/trips/" + id);
 
         //when
         MockHttpServletResponse response = mockMvc.perform(requestBuilder).andReturn().getResponse();
@@ -215,7 +212,7 @@ public class TripRestControllerTest {
     public void shouldThrowTripNotFoundExceptionWhenValidIdNotExistsInDeleteMethod() throws Exception {
         //given
         Long id = 1L;
-        RequestBuilder requestBuilder = delete("/trips/admin/delete/" + id);
+        RequestBuilder requestBuilder = delete("/admin/trips/" + id);
 
         doThrow(GuideNotFoundException.class).when(tripService).deleteTrip(id);
 
