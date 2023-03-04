@@ -29,7 +29,6 @@ public class DestinationIntegrationTest extends BaseIntegrationTest {
 
     HttpHeaders headers;
 
-    private Destination destination;
     private DestinationDto destinationDto;
 
     @BeforeEach
@@ -45,7 +44,6 @@ public class DestinationIntegrationTest extends BaseIntegrationTest {
         restTemplate.getRestTemplate().setInterceptors(Collections.singletonList(new BasicAuthenticationInterceptor(admin.getEmail(), "admin")));
 
         Long id = 1L;
-        destination = new Destination(id, "Paris");
         destinationDto = new DestinationDto(id, "Paris");
     }
 
@@ -58,6 +56,7 @@ public class DestinationIntegrationTest extends BaseIntegrationTest {
                 HttpMethod.POST,
                 new HttpEntity<>(destinationDto, headers),
                 DestinationDto.class);
+
         //then
         assertEquals(HttpStatus.CREATED, postResponse.getStatusCode());
         assertEquals(destinationDto, postResponse.getBody());
@@ -66,7 +65,7 @@ public class DestinationIntegrationTest extends BaseIntegrationTest {
 
 
         //given
-        Long id = destination.getId();
+        Long id = postResponse.getBody().getId();
 
         //when
         ResponseEntity<DestinationDto> getResponse = restTemplate.exchange(

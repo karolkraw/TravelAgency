@@ -3,7 +3,6 @@ package com.example.travelagency.integration;
 import com.example.travelagency.destination.Destination;
 import com.example.travelagency.destination.dto.DestinationDto;
 import com.example.travelagency.guide.Guide;
-import com.example.travelagency.guide.GuideRepository;
 import com.example.travelagency.guide.dto.GuideDto;
 import com.example.travelagency.guide.dto.GuideDtoMapper;
 import com.example.travelagency.guide.dto.GuideReadDto;
@@ -37,16 +36,12 @@ public class GuideIntegrationTest extends BaseIntegrationTest {
     @Autowired
     AppUserRepository appUserRepository;
 
-    @Autowired
-    GuideRepository guideRepository;
 
     @Autowired
     BCryptPasswordEncoder bCryptPasswordEncoder;
 
     HttpHeaders headers;
 
-
-    //Guide guide;
     GuideDto guideDto;
     Trip trip;
     Trip trip2;
@@ -102,7 +97,6 @@ public class GuideIntegrationTest extends BaseIntegrationTest {
 
         Long id = 1L;
 
-        //guide = new Guide(id, "John", "Miller", List.of(trip));
         guideDto = new GuideDto(id, "John", "Miller", List.of(tripReadDto));
     }
 
