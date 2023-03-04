@@ -13,11 +13,10 @@ import com.example.travelagency.trip.dto.TripReadDto;
 import com.example.travelagency.user.AppUser;
 import com.example.travelagency.user.AppUserRepository;
 import com.example.travelagency.user.AppUserRole;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.*;
 import org.springframework.http.client.support.BasicAuthenticationInterceptor;
@@ -30,7 +29,7 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class GuideIntegrationTest extends BaseIntegrationTest {
     @Autowired
     private TestRestTemplate restTemplate;
@@ -45,10 +44,9 @@ public class GuideIntegrationTest extends BaseIntegrationTest {
     BCryptPasswordEncoder bCryptPasswordEncoder;
 
     HttpHeaders headers;
-    ObjectMapper objectMapper = new ObjectMapper();
 
 
-    Guide guide;
+    //Guide guide;
     GuideDto guideDto;
     Trip trip;
     Trip trip2;
@@ -59,8 +57,6 @@ public class GuideIntegrationTest extends BaseIntegrationTest {
 
     @BeforeEach
     public void setup() {
-        objectMapper.registerModule(new JavaTimeModule());
-
         AppUser admin = AppUser.builder().firstName("admin").lastName("admin").passportNumber("123456789").email("admin@example.com")
                 .password(new BCryptPasswordEncoder().encode("admin")).appUserRole(AppUserRole.ADMIN)
                 .locked(false).enabled(true).trips(null).build();
@@ -81,7 +77,7 @@ public class GuideIntegrationTest extends BaseIntegrationTest {
                 .id(1L).price(BigDecimal.valueOf(150L))
                 .departureDate(LocalDate.now().plusDays(5))
                 .returnDate(LocalDate.now().plusDays(15))
-                .destination(new DestinationDto(1L, "Paris"))
+                .destination(new DestinationDto(0L, "Paris"))
                 .guide(new GuideReadDto(1L, "John", "Miller"))
                 .build();
         tripReadDto = TripReadDto.builder()
@@ -94,7 +90,7 @@ public class GuideIntegrationTest extends BaseIntegrationTest {
                 .id(2L).price(BigDecimal.valueOf(750L))
                 .departureDate(LocalDate.now().plusDays(5))
                 .returnDate(LocalDate.now().plusDays(15))
-                .destination(new Destination(1L, "London")).build();
+                .destination(new Destination(2L, "London")).build();
         tripDto2 = TripDto.builder()
                 .id(6L).price(BigDecimal.valueOf(750L))
                 .departureDate(LocalDate.now().plusDays(5))
@@ -106,7 +102,7 @@ public class GuideIntegrationTest extends BaseIntegrationTest {
 
         Long id = 1L;
 
-        guide = new Guide(id, "John", "Miller", List.of(trip));
+        //guide = new Guide(id, "John", "Miller", List.of(trip));
         guideDto = new GuideDto(id, "John", "Miller", List.of(tripReadDto));
     }
 
