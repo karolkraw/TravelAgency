@@ -2,6 +2,7 @@ package com.example.travelagency.guide.dto;
 
 import com.example.travelagency.guide.Guide;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static com.example.travelagency.trip.dto.TripDtoMapper.mapReadDtoTripsToTrips;
@@ -27,7 +28,7 @@ public class GuideDtoMapper {
 
     public static Guide mapGuideReadDtoToGuide(Long id, GuideReadDto guide) {
         if(guide == null) return null;
-        return new Guide(id, guide.getFirstName(), guide.getLastName(), List.of());
+        return new Guide(id, guide.getFirstName(), guide.getLastName(), new ArrayList<>());
     }
 
 
@@ -37,10 +38,4 @@ public class GuideDtoMapper {
                 .map(GuideDtoMapper::mapGuideToDto)
                 .toList();
     }
-
-   /* public static List<GuideNameDto> mapGuidesToDtosWithNames(List<Guide> guides) {
-        return guides.stream()
-                .map(guide -> new GuideNameDto(guide.getId(), guide.getFirstName(), guide.getLastName()))
-                .toList();
-    }*/
 }

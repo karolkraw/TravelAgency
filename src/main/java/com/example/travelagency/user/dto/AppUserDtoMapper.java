@@ -3,6 +3,7 @@ package com.example.travelagency.user.dto;
 import com.example.travelagency.trip.dto.TripDtoMapper;
 import com.example.travelagency.user.AppUser;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class AppUserDtoMapper {
@@ -60,12 +61,7 @@ public class AppUserDtoMapper {
         if (appUser == null) return null;
         return AppUser.builder().id(appUser.getId()).firstName(appUser.getFirstName()).lastName(appUser.getLastName())
                 .passportNumber(appUser.getPassportNumber()).email(appUser.getEmail()).appUserRole(appUser.getAppUserRole())
-                .locked(appUser.getLocked()).enabled(appUser.getEnabled()).trips((List.of()))
+                .locked(appUser.getLocked()).enabled(appUser.getEnabled()).trips(new ArrayList<>())
                 .build();
     }
-
-
-    /*public static AppUser mapDtoToAppUser(Long id, AppUserDto AppUserDto) {
-
-    }*/
 }

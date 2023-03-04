@@ -2,6 +2,7 @@ package com.example.travelagency.trip.dto;
 
 import com.example.travelagency.trip.Trip;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static com.example.travelagency.user.dto.AppUserDtoMapper.*;
@@ -10,8 +11,7 @@ import static com.example.travelagency.guide.dto.GuideDtoMapper.mapGuideReadDtoT
 import static com.example.travelagency.guide.dto.GuideDtoMapper.mapGuideToGuideReadDto;
 
 public class TripDtoMapper {
-    private TripDtoMapper() {
-    }
+    private TripDtoMapper() {}
 
     public static TripDto mapTripToDto(Trip trip) {
         if (trip == null) return null;
@@ -30,7 +30,6 @@ public class TripDtoMapper {
                 .toList();
     }
 
-
     public static Trip mapDtoToTrip(Long id, TripDto tripDto) {
         if (tripDto == null) return null;
         return Trip.builder().id(id).price(tripDto.getPrice())
@@ -38,6 +37,16 @@ public class TripDtoMapper {
                 .destination(mapDtoToDestination(tripDto.getDestination().getId(), tripDto.getDestination()))
                 .guide(mapGuideReadDtoToGuide(tripDto.getGuide().getId(), tripDto.getGuide()))
                 .appUsers(mapAppUserReadDtosToAppUsers(tripDto.getUsers()))
+                .build();
+    }
+
+    public static Trip mapRequestDtoToTrip(Long id, TripRequestDto tripDto) {
+        if (tripDto == null) return null;
+        return Trip.builder().id(id).price(tripDto.getPrice())
+                .departureDate(tripDto.getDepartureDate()).returnDate(tripDto.getReturnDate())
+                .destination(mapDtoToDestination(tripDto.getDestination().getId(), tripDto.getDestination()))
+                .guide(mapGuideReadDtoToGuide(tripDto.getGuide().getId(), tripDto.getGuide()))
+                .appUsers(new ArrayList<>())
                 .build();
     }
 
