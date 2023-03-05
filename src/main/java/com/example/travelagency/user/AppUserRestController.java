@@ -2,6 +2,7 @@
 package com.example.travelagency.user;
 
 
+import com.example.travelagency.trip.dto.TripDto;
 import com.example.travelagency.user.dto.AppUserDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -11,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import java.util.List;
 
+import static com.example.travelagency.trip.dto.TripDtoMapper.mapDtoToTrip;
 import static com.example.travelagency.user.dto.AppUserDtoMapper.*;
 
 @RestController
@@ -31,9 +33,9 @@ public class AppUserRestController {
         return ResponseEntity.ok(mapAppUsersToDtos(users));
     }
 
-    @PostMapping("/{userId}/users/{tripId}")
-    public ResponseEntity<AppUserDto> addTripToUser(@PathVariable Long userId, @PathVariable Long tripId) {
-        AppUser user = appUserService.addTripToUser(userId, tripId);
+    @PostMapping("/{userId}")
+    public ResponseEntity<AppUserDto> addTripToUser(@PathVariable Long userId, @RequestBody @Valid TripDto tripDto) {
+        AppUser user = appUserService.addTripToUser(userId, mapDtoToTrip(tripDto.getId(), tripDto));
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .body(mapAppUserToDto(user));
