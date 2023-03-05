@@ -25,7 +25,7 @@ public class DestinationIntegrationTest extends BaseIntegrationTest {
     AppUserRepository appUserRepository;
 
     @Autowired
-    BCryptPasswordEncoder bCryptPasswordEncoder;
+    BCryptPasswordEncoder passwordEncoder;
 
     HttpHeaders headers;
 
@@ -34,7 +34,7 @@ public class DestinationIntegrationTest extends BaseIntegrationTest {
     @BeforeEach
     public void setup() {
         AppUser admin = AppUser.builder().firstName("admin").lastName("admin").passportNumber("123456789").email("admin@example.com")
-                .password(new BCryptPasswordEncoder().encode("admin")).appUserRole(AppUserRole.ADMIN)
+                .password(passwordEncoder.encode("admin")).appUserRole(AppUserRole.ADMIN)
                 .locked(false).enabled(true).trips(null).build();
         appUserRepository.save(admin);
 

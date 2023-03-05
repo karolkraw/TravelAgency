@@ -17,9 +17,10 @@ import java.util.Optional;
 public class GuideService {
     private final GuideRepository guideRepository;
 
-    @Transactional
     public Guide addGuide(Guide guide) {
-        guide.getTrips().forEach(a -> a.setGuide(guide));
+        List<Trip> trips = guide.getTrips();
+        if(trips != null)
+            trips.forEach(a -> a.setGuide(guide));
         return guideRepository.save(guide);
     }
 
