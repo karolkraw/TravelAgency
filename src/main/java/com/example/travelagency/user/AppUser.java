@@ -31,7 +31,7 @@ public class AppUser implements UserDetails {
     private Boolean locked = false;
     private Boolean enabled = false;
 
-    @ManyToMany
+    @ManyToMany(cascade = {CascadeType.MERGE, CascadeType.PERSIST})
     @JoinTable(
             joinColumns = @JoinColumn(name = "app_user_id"),
             inverseJoinColumns = @JoinColumn(name = "trip_id"))
@@ -51,6 +51,15 @@ public class AppUser implements UserDetails {
         this.appUserRole = appUserRole;
     }
 
+    public void removeTrip(Trip trip) {
+        trips.remove(trip);
+        trip.getAppUsers().remove(this);
+    }
+
+    public void addTrip(Trip trip) {
+        trips.add(trip);
+        trip.getAppUsers().add(this);
+    }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -85,15 +94,5 @@ public class AppUser implements UserDetails {
     @Override
     public boolean isEnabled() {
         return enabled;
-    }
-
-    public void removeTrip(Trip trip) {
-        trips.remove(trip);
-        trip.getAppUsers().remove(this);
-    }
-
-    public void addTrip(Trip trip) {
-        trips.add(trip);
-        trip.getAppUsers().add(this);
     }
 }
