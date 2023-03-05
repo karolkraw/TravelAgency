@@ -15,12 +15,19 @@ public class TripDtoMapper {
 
     public static TripDto mapTripToDto(Trip trip) {
         if (trip == null) return null;
-        return TripDto.builder().id(trip.getId()).price(trip.getPrice())
-                .departureDate(trip.getDepartureDate()).returnDate(trip.getReturnDate())
-                .destination(mapDestinationToDto(trip.getDestination()))
-                .guide(mapGuideToGuideReadDto(trip.getGuide()))
-                .users(mapAppUsersToAppUserReadDtos(trip.getAppUsers()))
-                .build();
+        TripDto.TripDtoBuilder builder = TripDto.builder()
+                .id(trip.getId())
+                .price(trip.getPrice())
+                .departureDate(trip.getDepartureDate())
+                .returnDate(trip.getReturnDate());
+        if (trip.getDestination() != null) {
+            builder.destination(mapDestinationToDto(trip.getDestination()));
+        }
+        if (trip.getGuide() != null) {
+            builder.guide(mapGuideToGuideReadDto(trip.getGuide()));
+        }
+        builder.users(mapAppUsersToAppUserReadDtos(trip.getAppUsers()));
+        return builder.build();
     }
 
     public static List<TripDto> mapTripsToDtos(List<Trip> trips) {
@@ -32,38 +39,58 @@ public class TripDtoMapper {
 
     public static Trip mapDtoToTrip(Long id, TripDto tripDto) {
         if (tripDto == null) return null;
-        return Trip.builder().id(id).price(tripDto.getPrice())
-                .departureDate(tripDto.getDepartureDate()).returnDate(tripDto.getReturnDate())
-                .destination(mapDtoToDestination(tripDto.getDestination().getId(), tripDto.getDestination()))
-                .guide(mapGuideReadDtoToGuide(tripDto.getGuide().getId(), tripDto.getGuide()))
-                .appUsers(mapAppUserReadDtosToAppUsers(tripDto.getUsers()))
-                .build();
+        Trip.TripBuilder builder = Trip.builder()
+                .id(id)
+                .price(tripDto.getPrice())
+                .departureDate(tripDto.getDepartureDate())
+                .returnDate(tripDto.getReturnDate());
+        if (tripDto.getDestination() != null) {
+            builder.destination(mapDtoToDestination(tripDto.getDestination().getId(), tripDto.getDestination()));
+        }
+        if (tripDto.getGuide() != null) {
+            builder.guide(mapGuideReadDtoToGuide(tripDto.getGuide().getId(), tripDto.getGuide()));
+        }
+        builder.appUsers(mapAppUserReadDtosToAppUsers(tripDto.getUsers()));
+        return builder.build();
     }
 
     public static Trip mapRequestDtoToTrip(Long id, TripRequestDto tripDto) {
         if (tripDto == null) return null;
-        return Trip.builder().id(id).price(tripDto.getPrice())
-                .departureDate(tripDto.getDepartureDate()).returnDate(tripDto.getReturnDate())
-                .destination(mapDtoToDestination(tripDto.getDestination().getId(), tripDto.getDestination()))
-                .guide(mapGuideReadDtoToGuide(tripDto.getGuide().getId(), tripDto.getGuide()))
-                .appUsers(new ArrayList<>())
-                .build();
+        Trip.TripBuilder builder = Trip.builder().id(id).price(tripDto.getPrice())
+                .departureDate(tripDto.getDepartureDate()).returnDate(tripDto.getReturnDate());
+        if (tripDto.getDestination() != null) {
+            builder = builder.destination(mapDtoToDestination(tripDto.getDestination().getId(), tripDto.getDestination()));
+        }
+        if (tripDto.getGuide() != null) {
+            builder = builder.guide(mapGuideReadDtoToGuide(tripDto.getGuide().getId(), tripDto.getGuide()));
+        }
+        return builder.appUsers(new ArrayList<>()).build();
     }
 
     public static TripReadDto mapTripToTripReadDto(Trip trip) {
         if (trip == null) return null;
-        return TripReadDto.builder().id(trip.getId()).price(trip.getPrice())
-                .departureDate(trip.getDepartureDate()).returnDate(trip.getReturnDate())
-                .destination(mapDestinationToDto(trip.getDestination()))
-                .build();
+        TripReadDto.TripReadDtoBuilder builder = TripReadDto.builder()
+                .id(trip.getId())
+                .price(trip.getPrice())
+                .departureDate(trip.getDepartureDate())
+                .returnDate(trip.getReturnDate());
+        if (trip.getDestination() != null) {
+            builder.destination(mapDestinationToDto(trip.getDestination()));
+        }
+        return builder.build();
     }
 
     public static Trip mapTripReadDtoToTrip(TripReadDto trip) {
         if (trip == null) return null;
-        return Trip.builder().id(trip.getId()).price(trip.getPrice())
-                .departureDate(trip.getDepartureDate()).returnDate(trip.getReturnDate())
-                .destination(mapDtoToDestination(trip.getDestination().getId(), trip.getDestination()))
-                .build();
+        Trip.TripBuilder builder = Trip.builder()
+                .id(trip.getId())
+                .price(trip.getPrice())
+                .departureDate(trip.getDepartureDate())
+                .returnDate(trip.getReturnDate());
+        if (trip.getDestination() != null) {
+            builder.destination(mapDtoToDestination(trip.getDestination().getId(), trip.getDestination()));
+        }
+        return builder.build();
     }
 
     public static List<TripReadDto> mapTripsToTripReadDtos(List<Trip> trips) {
