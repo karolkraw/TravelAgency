@@ -1,8 +1,6 @@
 package com.example.travelagency.destination;
 
 import com.example.travelagency.exception.DestinationNotFoundException;
-import com.example.travelagency.destination.Destination;
-import com.example.travelagency.destination.DestinationRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

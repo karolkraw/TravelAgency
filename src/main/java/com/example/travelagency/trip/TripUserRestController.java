@@ -17,7 +17,7 @@ public class TripUserRestController {
     private final TripService tripService;
 
     @GetMapping("/{id}")
-    public ResponseEntity<TripReadDto> getTripUser(@PathVariable Long id) {
+    public ResponseEntity<TripReadDto> getTrip(@PathVariable Long id) {
         TripReadDto trip = mapTripToTripReadDto(tripService.getTrip(id));
         return ResponseEntity.ok(trip);
     }

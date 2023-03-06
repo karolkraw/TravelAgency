@@ -5,6 +5,7 @@ import com.example.travelagency.destination.dto.DestinationDtoMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -16,7 +17,7 @@ import static com.example.travelagency.destination.dto.DestinationDtoMapper.*;
 @RequestMapping("/destinations/")
 @RequiredArgsConstructor
 public class DestinationRestController {
-    private final static Long EMPTY_ID = 0L;
+    private final static Long EMPTY_ID = null;
     private final DestinationService destinationService;
 
     @GetMapping("/{id}")

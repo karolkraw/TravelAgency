@@ -1,7 +1,5 @@
 package com.example.travelagency.guide;
 
-import com.example.travelagency.destination.Destination;
-import com.example.travelagency.destination.DestinationRepository;
 import com.example.travelagency.exception.GuideNotFoundException;
 import com.example.travelagency.trip.Trip;
 import lombok.RequiredArgsConstructor;

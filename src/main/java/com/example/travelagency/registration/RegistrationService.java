@@ -6,25 +6,19 @@ import com.example.travelagency.user.AppUserRole;
 import com.example.travelagency.registration.token.ConfirmationToken;
 import com.example.travelagency.registration.token.ConfirmationTokenService;
 import com.example.travelagency.user.UserDetailsServiceImpl;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 
 @Service
-//@AllArgsConstructor
+@RequiredArgsConstructor
 public class RegistrationService {
     private final UserDetailsServiceImpl userDetailsServiceImpl;
     private final EmailValidator emailValidator;
     private final EmailSender emailSender;
     private final ConfirmationTokenService confirmationTokenService;
-
-    public RegistrationService(UserDetailsServiceImpl userDetailsServiceImpl, EmailValidator emailValidator, EmailSender emailSender, ConfirmationTokenService confirmationTokenService) {
-        this.userDetailsServiceImpl = userDetailsServiceImpl;
-        this.emailValidator = emailValidator;
-        this.emailSender = emailSender;
-        this.confirmationTokenService = confirmationTokenService;
-    }
 
     public String register(RegistrationRequest request) {
         boolean isValidEmail = emailValidator

@@ -23,6 +23,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -67,13 +68,14 @@ public class GuideIntegrationTest extends BaseIntegrationTest {
                 .id(1L).price(BigDecimal.valueOf(150L))
                 .departureDate(LocalDate.now().plusDays(5))
                 .returnDate(LocalDate.now().plusDays(15))
-                .destination(new Destination(1L, "Paris")).build();
+                .destination(new Destination(1L, "Paris")).appUsers(new ArrayList<>()).build();
         tripDto = TripDto.builder()
                 .id(1L).price(BigDecimal.valueOf(150L))
                 .departureDate(LocalDate.now().plusDays(5))
                 .returnDate(LocalDate.now().plusDays(15))
                 .destination(new DestinationDto(0L, "Paris"))
                 .guide(new GuideReadDto(1L, "John", "Miller"))
+                .users(new ArrayList<>())
                 .build();
         tripReadDto = TripReadDto.builder()
                 .id(1L).price(BigDecimal.valueOf(150L))
@@ -85,6 +87,7 @@ public class GuideIntegrationTest extends BaseIntegrationTest {
                 .id(2L).price(BigDecimal.valueOf(750L))
                 .departureDate(LocalDate.now().plusDays(5))
                 .returnDate(LocalDate.now().plusDays(15))
+                .appUsers(new ArrayList<>())
                 .destination(new Destination(2L, "London")).build();
         tripDto2 = TripDto.builder()
                 .id(6L).price(BigDecimal.valueOf(750L))
@@ -92,6 +95,7 @@ public class GuideIntegrationTest extends BaseIntegrationTest {
                 .returnDate(LocalDate.now().plusDays(15))
                 .destination(new DestinationDto(0L, "London"))
                 .guide(new GuideReadDto(1L, "Gary", "Miller"))
+                .users(new ArrayList<>())
                 .build();
 
 

@@ -5,6 +5,7 @@ import com.example.travelagency.trip.dto.TripRequestDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -31,7 +32,6 @@ public class TripAdminRestController {
         List<TripDto> trips = mapTripsToDtos(tripService.getAllTripsWithUsers(page));
         return ResponseEntity.ok(trips);
     }
-
 
     @PostMapping
     public ResponseEntity<TripDto> addTrip(@RequestBody @Valid TripRequestDto tripDto) {

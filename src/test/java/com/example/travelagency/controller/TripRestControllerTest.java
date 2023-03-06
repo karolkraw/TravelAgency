@@ -29,6 +29,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -181,6 +182,7 @@ public class TripRestControllerTest {
                 .returnDate(LocalDate.now().plusDays(15))
                 .destination(new Destination(1L, "Paris"))
                 .guide(new Guide(1L, "John", "Miller", List.of()))
+                .appUsers(new ArrayList<>())
                 .build();
 
         RequestBuilder requestBuilder = put("/admin/trips/" + id)
