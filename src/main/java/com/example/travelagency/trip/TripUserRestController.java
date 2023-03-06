@@ -11,7 +11,7 @@ import static com.example.travelagency.trip.dto.TripDtoMapper.mapTripToTripReadD
 import static com.example.travelagency.trip.dto.TripDtoMapper.mapTripsToTripReadDtos;
 
 @RestController
-@RequestMapping("/trips")
+@RequestMapping("/user/trips")
 @RequiredArgsConstructor
 public class TripUserRestController {
     private final TripService tripService;
