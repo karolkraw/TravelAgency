@@ -1,9 +1,7 @@
 package com.example.travelagency.user;
 
-import com.example.travelagency.user.AppUser;
 import com.example.travelagency.registration.token.ConfirmationToken;
 import com.example.travelagency.registration.token.ConfirmationTokenService;
-import com.example.travelagency.user.AppUserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -37,9 +35,6 @@ public class UserDetailsServiceImpl implements UserDetailsService {
                 .isPresent();
 
         if (userExists) {
-            // TODO check of attributes are the same and
-            // TODO if email not confirmed send confirmation email.
-
             throw new IllegalStateException("email already taken");
         }
 
@@ -66,11 +61,9 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     }
 
     @Transactional
-    public int enableAppUser(String email) {
-        return appUserRepository.enableAppUser(email);
+    public void enableAppUser(String email) {
+        appUserRepository.enableAppUser(email);
     }
-
-
 }
 
 
