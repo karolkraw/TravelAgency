@@ -11,8 +11,6 @@ import java.util.Optional;
 
 @Repository
 public interface AppUserRepository extends JpaRepository<AppUser, Long> {
-
-
     Optional<AppUser> findByEmail(String email);
 
     @Query("SELECT DISTINCT u FROM AppUser u JOIN u.trips t WHERE t.id IN :tripIds")
